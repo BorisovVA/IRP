@@ -1,4 +1,3 @@
-// @strict-types
 
 #Region Public
 
@@ -80,7 +79,7 @@ Procedure FindDataForInputStringChoiceDataGetProcessing(Source, ChoiceData, Para
 	Query.SetParameter("SearchString", Parameters.SearchString);
 	QueryTable = GetItemsBySearchString(Query);
 
-	ChoiceData = New ValueList();
+	ChoiceData = New ValueList(); // ValueList of CatalogRef.Items
 
 	For Each Row In QueryTable Do
 		If Not ChoiceData.FindByValue(Row.Ref) = Undefined Then
@@ -147,7 +146,7 @@ Procedure GetCatalogPresentation(Source, Data, Presentation, StandardProcessing)
 	SourceType = TypeOf(Source);
 	If SourceType = Type("CatalogManager.Currencies") Then
 		Presentation = String(Data.Code);
-	ElsIf SourceType = Type("ChartOfAccountsManager.R6010C_Master") Then
+	ElsIf SourceType = Type("ChartOfAccountsManager.Basic") Then
 		Presentation = String(Data.Code);
 	ElsIf SourceType = Type("CatalogManager.PriceKeys") Then
 		Presentation = LocalizationReuse.CatalogDescriptionWithAddAttributes(Data.Ref);
@@ -415,9 +414,9 @@ EndProcedure
 //
 // Returns:
 //  Structure - Custom search filter:
-// * FieldName - String
-// * Value - Undefined
-// * ComparisonType - ComparisonType -
+// * FieldName - String - 
+// * Value - Undefined - 
+// * ComparisonType - See ComparisonType
 // * DataCompositionComparisonType - Undefined
 Function NewCustomSearchFilter() Export
 	Structure = New Structure;

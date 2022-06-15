@@ -176,7 +176,14 @@ Function PicturesInfoForSlider(ItemRef, UUID, FileRef = Undefined, UseFullSizePh
 		
 	For Each Picture In Pictures Do
 		PictureStructure = New Structure("Src, Preview, ID");
-		Preview = PutToTempStorage(Picture.Preview, UUID);
+		
+		TempStorageURL = StrSplit(PutToTempStorage("", UUID), "?");
+		SeanceID = "";
+		If TempStorageURL.Count() > 1 Then
+			SeanceID = "&" + TempStorageURL[TempStorageURL.UBound()];
+		EndIf;
+		Preview = Picture.Preview + SeanceID;
+		
 		If UseFullSizePhoto Then
 			
 			If TypeOf(Picture.Src) = Type("String") Then
@@ -350,8 +357,10 @@ Procedure HTMLViewControl(Form, CommandName) Export
 	Visible = CommandItem.Check;
 	
 	If Visible Then
+		//@skip-warning
 		CommandItem.BackColor = CommonFunctionsServer.GetStyleByName("ActivityColor");
 	Else
+		//@skip-warning
 		CommandItem.BackColor = CommonFunctionsServer.GetStyleByName("ButtonBackColor");
 	EndIf;
 	

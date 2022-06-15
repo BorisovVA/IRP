@@ -77,7 +77,7 @@ Procedure SetVisibilityAvailability(Object, Form)
 	Form.Items.LinkUnlinkBasisDocuments.Enabled = Not Form.ReadOnly;
 	Form.Items.LegalName.Enabled = ValueIsFilled(Object.Partner);
 	Form.Items.EditCurrencies.Enabled = Not Form.ReadOnly;
-	Form.Items.EditTrialBalanceAccounts.Enabled = Not Form.ReadOnly;
+	Form.Items.EditAccounting.Enabled = Not Form.ReadOnly;
 EndProcedure
 
 #EndRegion
@@ -358,14 +358,13 @@ EndProcedure
 #Region SERIAL_LOT_NUMBERS
 
 &AtClient
-Procedure ItemListSerialLotNumbersPresentationStartChoice(Item, ChoiceData, StandardProcessing, AddInfo = Undefined) Export
-	DocPurchaseInvoiceClient.ItemListSerialLotNumbersPresentationStartChoice(Object, ThisObject, Item, ChoiceData,
-		StandardProcessing);
+Procedure ItemListSerialLotNumbersPresentationStartChoice(Item, ChoiceData, StandardProcessing) Export
+	SerialLotNumberClient.PresentationStartChoice(Object, ThisObject, Item, ChoiceData, StandardProcessing);
 EndProcedure
 
 &AtClient
 Procedure ItemListSerialLotNumbersPresentationClearing(Item, StandardProcessing)
-	DocPurchaseInvoiceClient.ItemListSerialLotNumbersPresentationClearing(Object, ThisObject, Item, StandardProcessing);
+	SerialLotNumberClient.PresentationClearing(Object, ThisObject, Item, StandardProcessing);
 EndProcedure
 
 #EndRegion
@@ -471,7 +470,7 @@ EndFunction
 
 &AtClient
 Procedure DescriptionClick(Item, StandardProcessing)
-	DocumentsClient.DescriptionClick(Object, ThisObject, Item, StandardProcessing);
+	CommonFormActions.EditMultilineText(ThisObject, Item, StandardProcessing);
 EndProcedure
 
 #EndRegion
@@ -480,22 +479,22 @@ EndProcedure
 
 &AtClient
 Procedure DecorationGroupTitleCollapsedPictureClick(Item)
-	DocPurchaseInvoiceClient.DecorationGroupTitleCollapsedPictureClick(Object, ThisObject, Item);
+	DocumentsClientServer.ChangeTitleCollapse(Object, ThisObject, True);
 EndProcedure
 
 &AtClient
 Procedure DecorationGroupTitleCollapsedLabelClick(Item)
-	DocPurchaseInvoiceClient.DecorationGroupTitleCollapsedLabelClick(Object, ThisObject, Item);
+	DocumentsClientServer.ChangeTitleCollapse(Object, ThisObject, True);
 EndProcedure
 
 &AtClient
 Procedure DecorationGroupTitleUncollapsedPictureClick(Item)
-	DocPurchaseInvoiceClient.DecorationGroupTitleUncollapsedPictureClick(Object, ThisObject, Item);
+	DocumentsClientServer.ChangeTitleCollapse(Object, ThisObject, False);
 EndProcedure
 
 &AtClient
 Procedure DecorationGroupTitleUncollapsedLabelClick(Item)
-	DocPurchaseInvoiceClient.DecorationGroupTitleUncollapsedLabelClick(Object, ThisObject, Item);
+	DocumentsClientServer.ChangeTitleCollapse(Object, ThisObject, False);
 EndProcedure
 
 #EndRegion
@@ -533,12 +532,12 @@ EndProcedure
 
 &AtClient
 Procedure OpenPickupItems(Command)
-	DocPurchaseInvoiceClient.OpenPickupItems(Object, ThisObject, Command);
+	DocumentsClient.OpenPickupItems(Object, ThisObject, Command);
 EndProcedure
 
 &AtClient
 Procedure SearchByBarcode(Command, Barcode = "")
-	DocPurchaseInvoiceClient.SearchByBarcode(Barcode, Object, ThisObject);
+	DocumentsClient.SearchByBarcodeWithPriceType(Barcode, Object, ThisObject);
 EndProcedure
 
 &AtClient
@@ -645,17 +644,18 @@ Procedure ShowHiddenTables(Command)
 EndProcedure
 
 &AtClient
-Procedure EditTrialBalanceAccounts(Command)
+Procedure EditAccounting(Command)
 	CurrentData = ThisObject.Items.ItemList.CurrentData;
 	If CurrentData = Undefined Then
 		Return;
 	EndIf;
-	FormParameters = AccountingClientServer.GetParametersEditTrialBalanceAccounts(Object, CurrentData, "ItemList");
-	NotifyParameters = New Structure();
-	NotifyParameters.Insert("Object", Object);
-	NotifyParameters.Insert("Form"  , ThisObject);
-	Notify = New NotifyDescription("EditTrialBalanceAccounts", AccountingClient, NotifyParameters);
-	OpenForm("CommonForm.EditTrialBalanceAccounts", FormParameters, ThisObject, , , , Notify, FormWindowOpeningMode.LockOwnerWindow);
+	UpdateAccountingData();
+	AccountingClient.OpenFormEditAccounting(Object, ThisObject, CurrentData, "ItemList");
+EndProcedure
+
+&AtServer
+Procedure UpdateAccountingData()
+	AccountingClientServer.UpdateAccountingTables(Object, "ItemList");
 EndProcedure
 
 #EndRegion

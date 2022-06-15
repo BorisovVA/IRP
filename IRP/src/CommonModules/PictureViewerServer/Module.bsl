@@ -116,6 +116,22 @@ Function GetFileRefsByFileIDs(FileIDs) Export
 	Return Query.Execute().Unload().UnloadColumn("Ref");
 EndFunction
 
+// Get pictures by object ref.
+// 
+// Parameters:
+//  OwnerRef - CatalogRef.Items, CatalogRef.ItemKeys - Owner ref
+//  DirectLink - Boolean - Direct link
+//  FileRef - Undefined - File ref
+// 
+// Returns:
+//  ValueTable - Get pictures by object ref:
+//  * Ref - CatalogRef.Files
+//  * FileID - String
+//  * isFilledVolume - Boolean
+//  * GETIntegrationSettings - CatalogRef.IntegrationSettings
+//  * isLocalPictureURL - Boolean
+//  * URI - String
+//  * Priority - Number
 Function GetPicturesByObjectRef(OwnerRef, DirectLink = False, FileRef = Undefined) Export
 	Query = New Query();
 	If Not DirectLink And TypeOf(OwnerRef) = Type("CatalogRef.Items") Then
@@ -508,7 +524,7 @@ Function PicturesInfoForSlider(ItemRef, FileRef = Undefined, UseFullSizePhoto = 
 			EndIf;
 		EndIf;
 		
-		PictureStructure.Preview = Picture.Ref.Preview.Get();
+		PictureStructure.Preview = GetURL(Picture.Ref, "Preview");
 
 		PicArray.Add(PictureStructure);
 	EndDo;

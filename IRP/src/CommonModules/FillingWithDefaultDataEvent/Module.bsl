@@ -25,7 +25,27 @@ IsUsedNewFunctionality =
 	Or TypeOf(Source) = Type("DocumentObject.StockAdjustmentAsWriteOff")
 	Or TypeOf(Source) = Type("DocumentObject.SalesInvoice")
 	Or TypeOf(Source) = Type("DocumentObject.PurchaseInvoice")
-	Or TypeOf(Source) = Type("DocumentObject.InternalSupplyRequest");
+	Or TypeOf(Source) = Type("DocumentObject.InternalSupplyRequest")
+	Or TypeOf(Source) = Type("DocumentObject.RetailSalesReceipt")
+	
+	Or TypeOf(Source) = Type("DocumentObject.SalesReturn")
+	Or TypeOf(Source) = Type("DocumentObject.PurchaseReturn")
+	Or TypeOf(Source) = Type("DocumentObject.RetailReturnReceipt")
+
+	Or TypeOf(Source) = Type("DocumentObject.SalesOrder")
+	Or TypeOf(Source) = Type("DocumentObject.SalesOrderClosing")
+	Or TypeOf(Source) = Type("DocumentObject.PurchaseOrder")
+	Or TypeOf(Source) = Type("DocumentObject.PurchaseOrderClosing")
+	Or TypeOf(Source) = Type("DocumentObject.SalesReturnOrder")
+	Or TypeOf(Source) = Type("DocumentObject.PurchaseReturnOrder")
+	Or TypeOf(Source) = Type("DocumentObject.InventoryTransfer")
+	Or TypeOf(Source) = Type("DocumentObject.InventoryTransferOrder")
+	Or TypeOf(Source) = Type("DocumentObject.PhysicalInventory")
+	Or TypeOf(Source) = Type("DocumentObject.ItemStockAdjustment")
+	Or TypeOf(Source) = Type("DocumentObject.Bundling")
+	Or TypeOf(Source) = Type("DocumentObject.Unbundling")
+	
+	Or TypeOf(Source) = Type("DocumentObject.CashTransferOrder");
 
 	Data = New Structure();
 
@@ -89,15 +109,12 @@ IsUsedNewFunctionality =
 			ServerParameters.ReadOnlyProperties = ReadOnlyProperties;
 			Parameters = ControllerClientServer_V2.GetParameters(ServerParameters);
 			
-			For Each PropertyName In ArrayOfBasisDocumentProperties Do
-				If Not ValueIsFilled(PropertyName) Then
+			For Each DataPath In ArrayOfBasisDocumentProperties Do
+				If Not ValueIsFilled(DataPath) Then
 					Continue;
 				EndIf;
-				DataPath = StrSplit(PropertyName, ".");
-				If DataPath.Count() = 1 Then
-					Property = New Structure("DataPath", TrimAll(DataPath[0]));
-					ControllerClientServer_V2.API_SetProperty(Parameters, Property, Source[Property.DataPath]);
-				EndIf;
+				Property = New Structure("DataPath", TrimAll(DataPath));
+				ControllerClientServer_V2.API_SetProperty(Parameters, Property, Undefined);
 			EndDo;
 			
 			// UserSetting
@@ -128,7 +145,10 @@ IsUsedNewFunctionality =
 				EndIf;
 			EndDo;
 			
-		EndDo;
+		EndDo; // ArrayOfMainTables
+		
+		
+		
 		
 	EndIf; // IsUsedNewFunctionality 
 	
